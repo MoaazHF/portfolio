@@ -8,8 +8,9 @@
   "tagline": "One sharp line about what you build and why it matters.",
   "email": "you@example.com",
   "resume": "/resume.pdf",
-  "accent": "#d4ff3a",
-  "portrait": "/img/portrait-cutout.webp",
+  "accent": "#2e5eb6",
+  "portrait": "/img/portrait-cutout.png",
+  "portraitDepth": "/img/portrait-depth.png",
   "portraitHover": "/img/portrait-hover.webp",
   "signature": "",
   "rive": {

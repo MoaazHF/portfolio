@@ -70,6 +70,7 @@ const SCHEMA = [
     { key: 'email', label: 'Email', type: 'email', required: true },
     { key: 'resume', label: 'Resume PDF', type: 'file', dir: '/', accept: '.pdf' },
     { key: 'portrait', label: 'Hero portrait', type: 'file', dir: '/img/', hint: 'Transparent-background cutout (PNG/WebP)' },
+    { key: 'portraitDepth', label: 'Portrait depth map', type: 'file', dir: '/img/', hint: 'Grayscale, white = near, same size as the portrait' },
     { key: 'portraitHover', label: 'Portrait hover image', type: 'file', dir: '/img/', hint: 'Revealed on hover. Same size & framing as the portrait so they line up' },
     { key: 'signature', label: 'Signature', type: 'file', dir: '/img/', accept: '.svg,image/*' },
     { key: 'rive.loader', label: 'Loader animation (.riv)', type: 'file', dir: '/rive/', accept: '.riv' },

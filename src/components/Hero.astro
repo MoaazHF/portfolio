@@ -1,6 +1,6 @@
 ---
 import { profile } from '../data/profile';
-const { name, role, location, tagline, portrait, portraitHover, signature } = profile;
+const { name, role, location, tagline, portrait, portraitDepth, portraitHover, signature } = profile;
 ---
 <section class="hero" id="top">
   <canvas class="hero__bg" data-hero-bg aria-hidden="true"></canvas>
@@ -10,7 +10,7 @@ const { name, role, location, tagline, portrait, portraitHover, signature } = pr
   </h1>
   {portrait && (
     <div class="hero__figure">
-      <img class="hero__portrait" src={portrait} data-hover={portraitHover || undefined} alt={`${name.first} ${name.last}`} />
+      <img class="hero__portrait" src={portrait} data-depth={portraitDepth || undefined} data-hover={portraitHover || undefined} alt={`${name.first} ${name.last}`} />
       <canvas class="hero__reveal" aria-hidden="true"></canvas>
     </div>
   )}
