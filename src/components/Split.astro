@@ -1,0 +1,17 @@
+---
+import { profile } from '../data/profile';
+import Media from './Media.astro';
+---
+<section class="section split">
+  {profile.split.map((s) => (
+    <a class="split__card" href={s.href} data-reveal>
+      <Media src={s.image} alt={s.title} label={s.label} />
+      <div class="split__body">
+        <p class="eyebrow">{s.label}</p>
+        <h2>{s.title}</h2>
+        <p>{s.text}</p>
+        <span class="split__arrow" aria-hidden="true">→</span>
+      </div>
+    </a>
+  ))}
+</section>

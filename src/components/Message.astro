@@ -1,0 +1,9 @@
+---
+import { profile } from '../data/profile';
+const { eyebrow, body, quote } = profile.message;
+---
+<section class="section message" id="about">
+  <p class="eyebrow" data-reveal>{eyebrow}</p>
+  <p class="message__body" data-split>{body}</p>
+  <blockquote class="message__quote" data-reveal>“{quote}”</blockquote>
+</section>

@@ -1,0 +1,11 @@
+---
+import { profile } from '../data/profile';
+---
+<section class="cta">
+  <p class="eyebrow">Available for work</p>
+  <h2 class="cta__title" data-split>Let's build something fast</h2>
+  <div class="cta__actions" data-reveal>
+    <a class="btn btn--solid" href={`mailto:${profile.email}`}>Get in touch</a>
+    <a class="btn" href={profile.resume} target="_blank" rel="noopener">Download resume</a>
+  </div>
+</section>

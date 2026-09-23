@@ -1,0 +1,28 @@
+---
+import '../styles/global.css';
+import { profile } from '../data/profile';
+
+const title = `${profile.name.first} ${profile.name.last} — ${profile.role}`;
+---
+<!doctype html>
+<html lang="en" style={`--accent:${profile.accent}`}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={profile.tagline} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={profile.tagline} />
+    <meta name="theme-color" content="#0b0b0c" />
+    <link rel="icon" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;700&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <slot />
+    <script>
+      import '../scripts/motion';
+    </script>
+  </body>
+</html>

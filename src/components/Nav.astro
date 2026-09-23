@@ -1,0 +1,32 @@
+---
+import { profile } from '../data/profile';
+---
+<header class="nav" data-nav>
+  <a href="#top" class="nav__logo" aria-label="Home">{profile.name.first[0]}{profile.name.last[0]}</a>
+  <nav id="menu" class="nav__menu" aria-label="Main">
+    {profile.nav.map((l) => <a href={l.href}>{l.label}</a>)}
+  </nav>
+  <a class="btn nav__cta" href={profile.resume} target="_blank" rel="noopener">Resume</a>
+  <button class="nav__burger" aria-controls="menu" aria-expanded="false" aria-label="Toggle menu">
+    <span></span><span></span>
+  </button>
+</header>
+
+<script>
+  const nav = document.querySelector<HTMLElement>('[data-nav]')!;
+  const btn = nav.querySelector('button')!;
+  const setOpen = (open: boolean) => {
+    btn.setAttribute('aria-expanded', String(open));
+    nav.classList.toggle('is-open', open);
+  };
+  btn.addEventListener('click', () => setOpen(btn.getAttribute('aria-expanded') !== 'true'));
+  nav.querySelectorAll('#menu a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+
+  // hide on scroll down, reveal on scroll up
+  let last = 0;
+  addEventListener('scroll', () => {
+    const y = scrollY;
+    nav.classList.toggle('is-hidden', y > last && y > 200 && !nav.classList.contains('is-open'));
+    last = y;
+  }, { passive: true });
+</script>

@@ -1,0 +1,33 @@
+---
+import { profile } from '../data/profile';
+const { name, role, location, tagline, portrait, portraitHover, signature } = profile;
+---
+<section class="hero" id="top">
+  <canvas class="hero__bg" data-hero-bg aria-hidden="true"></canvas>
+  <h1 class="hero__name">
+    <span data-split>{name.first}</span>
+    <span data-split class="outline">{name.last}</span>
+  </h1>
+  {portrait && (
+    <div class="hero__figure">
+      <img class="hero__portrait" src={portrait} data-hover={portraitHover || undefined} alt={`${name.first} ${name.last}`} />
+      <canvas class="hero__reveal" aria-hidden="true"></canvas>
+    </div>
+  )}
+  <div class="hero__meta" data-parallax>
+    <p class="eyebrow">{role} · {location}</p>
+    <p class="hero__tag">{tagline}</p>
+    {signature && <img class="hero__sig" src={signature} alt={`${name.first} ${name.last} signature`} />}
+  </div>
+  <a href="#about" class="hero__scroll">Scroll ↓</a>
+</section>
+
+<script>
+  // lazy chunks: three.js stays out of the main bundle
+  const bg = document.querySelector<HTMLCanvasElement>('[data-hero-bg]');
+  if (bg) import('../scripts/hero-bg').then((m) => m.initHeroBg(bg));
+
+  const img = document.querySelector<HTMLImageElement>('.hero__portrait');
+  const reveal = document.querySelector<HTMLCanvasElement>('.hero__reveal');
+  if (img && reveal) import('../scripts/portrait').then((m) => m.initPortrait(reveal, img));
+</script>

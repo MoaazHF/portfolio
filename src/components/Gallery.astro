@@ -1,0 +1,15 @@
+---
+import { profile } from '../data/profile';
+import Media from './Media.astro';
+---
+<section class="hgallery" aria-label="Career moments">
+  <div class="hgallery__track" data-hscroll>
+    <h2 class="hgallery__title">Moments<br /><span class="outline">that count</span></h2>
+    {profile.gallery.map((g) => (
+      <figure class="hgallery__item">
+        <Media src={g.src} alt={g.caption} label={g.date} />
+        <figcaption><span>{g.date}</span>{g.caption}</figcaption>
+      </figure>
+    ))}
+  </div>
+</section>

@@ -1,0 +1,236 @@
+{
+  "name": {
+    "first": "FIRST",
+    "last": "LASTNAME"
+  },
+  "role": "Software Engineer",
+  "location": "City, Country",
+  "tagline": "One sharp line about what you build and why it matters.",
+  "email": "you@example.com",
+  "resume": "/resume.pdf",
+  "accent": "#d4ff3a",
+  "portrait": "/img/portrait-cutout.webp",
+  "portraitHover": "/img/portrait-hover.webp",
+  "signature": "",
+  "rive": {
+    "loader": ""
+  },
+  "nav": [
+    {
+      "label": "Home",
+      "href": "#top"
+    },
+    {
+      "label": "Work",
+      "href": "#work"
+    },
+    {
+      "label": "About",
+      "href": "#about"
+    },
+    {
+      "label": "Timeline",
+      "href": "#timeline"
+    }
+  ],
+  "message": {
+    "eyebrow": "A message from me",
+    "body": "Placeholder mission statement. Two or three sentences on how you approach your craft, what drives you, and the kind of problems you love solving.",
+    "quote": "A personal quote you live by goes here."
+  },
+  "gallery": [
+    {
+      "src": "",
+      "caption": "Career moment one",
+      "date": "2021"
+    },
+    {
+      "src": "",
+      "caption": "Career moment two",
+      "date": "2022"
+    },
+    {
+      "src": "",
+      "caption": "Career moment three",
+      "date": "2023"
+    },
+    {
+      "src": "",
+      "caption": "Career moment four",
+      "date": "2024"
+    },
+    {
+      "src": "",
+      "caption": "Career moment five",
+      "date": "2025"
+    },
+    {
+      "src": "",
+      "caption": "Career moment six",
+      "date": "2026"
+    }
+  ],
+  "split": [
+    {
+      "label": "Professional",
+      "title": "On the clock",
+      "text": "Experience, education and the work you are proud of.",
+      "href": "#work",
+      "image": ""
+    },
+    {
+      "label": "Personal",
+      "title": "Off the clock",
+      "text": "Hobbies, side quests and what keeps you curious.",
+      "href": "#timeline",
+      "image": ""
+    }
+  ],
+  "projects": [
+    {
+      "name": "Project One",
+      "year": "2026",
+      "blurb": "What it does in one line.",
+      "stack": [
+        "TypeScript",
+        "Node"
+      ],
+      "image": "",
+      "live": "#",
+      "repo": "#"
+    },
+    {
+      "name": "Project Two",
+      "year": "2025",
+      "blurb": "What it does in one line.",
+      "stack": [
+        "Flutter",
+        "Firebase"
+      ],
+      "image": "",
+      "live": "#",
+      "repo": "#"
+    },
+    {
+      "name": "Project Three",
+      "year": "2025",
+      "blurb": "What it does in one line.",
+      "stack": [
+        "Docker",
+        "AWS"
+      ],
+      "image": "",
+      "live": "#",
+      "repo": "#"
+    },
+    {
+      "name": "Project Four",
+      "year": "2024",
+      "blurb": "What it does in one line.",
+      "stack": [
+        "React",
+        "PostgreSQL"
+      ],
+      "image": "",
+      "live": "#",
+      "repo": "#"
+    },
+    {
+      "name": "Project Five",
+      "year": "2024",
+      "blurb": "What it does in one line.",
+      "stack": [
+        "Python"
+      ],
+      "image": "",
+      "live": "#",
+      "repo": "#"
+    },
+    {
+      "name": "Project Six",
+      "year": "2023",
+      "blurb": "What it does in one line.",
+      "stack": [
+        "C++"
+      ],
+      "image": "",
+      "live": "#",
+      "repo": "#"
+    }
+  ],
+  "timeline": [
+    {
+      "date": "2026",
+      "title": "Milestone title",
+      "place": "Company / Event"
+    },
+    {
+      "date": "2025",
+      "title": "Milestone title",
+      "place": "Company / Event"
+    },
+    {
+      "date": "2024",
+      "title": "Milestone title",
+      "place": "Company / Event"
+    },
+    {
+      "date": "2023",
+      "title": "Milestone title",
+      "place": "Company / Event"
+    },
+    {
+      "date": "2022",
+      "title": "Milestone title",
+      "place": "University / Event"
+    }
+  ],
+  "logos": [
+    {
+      "name": "Company A",
+      "src": ""
+    },
+    {
+      "name": "Company B",
+      "src": ""
+    },
+    {
+      "name": "Company C",
+      "src": ""
+    },
+    {
+      "name": "Company D",
+      "src": ""
+    },
+    {
+      "name": "Company E",
+      "src": ""
+    },
+    {
+      "name": "Company F",
+      "src": ""
+    }
+  ],
+  "socials": [
+    {
+      "name": "GitHub",
+      "handle": "@username",
+      "href": "https://github.com/"
+    },
+    {
+      "name": "LinkedIn",
+      "handle": "/in/username",
+      "href": "https://linkedin.com/"
+    },
+    {
+      "name": "X",
+      "handle": "@username",
+      "href": "https://x.com/"
+    },
+    {
+      "name": "Email",
+      "handle": "you@example.com",
+      "href": "mailto:you@example.com"
+    }
+  ]
+}

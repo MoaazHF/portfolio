@@ -1,0 +1,7 @@
+---
+import { profile } from '../data/profile';
+---
+<div class="loader" data-loader aria-hidden="true">
+  {profile.rive.loader && <canvas class="loader__rive" data-rive={profile.rive.loader} width="320" height="320"></canvas>}
+  <span class="loader__count" data-loader-count>0</span>
+</div>

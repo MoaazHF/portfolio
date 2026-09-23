@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Portfolio Data Form</title>
+<style>
+  :root { --bg: #0b0b0c; --panel: #141416; --fg: #f2f0ea; --muted: #8d8b86; --line: rgb(255 255 255 / 0.14); --accent: #d4ff3a; --err: #ff6b6b; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.5 system-ui, sans-serif; }
+  header { position: sticky; top: 0; z-index: 2; padding: 16px; background: rgb(11 11 12 / 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+  h1 { margin: 0 0 4px; font-size: 1.3rem; }
+  header p { margin: 0 0 12px; color: var(--muted); font-size: 0.9rem; }
+  .bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  #status { color: var(--accent); font-size: 0.9rem; }
+  #status.err { color: var(--err); }
+  form { max-width: 960px; margin: 0 auto; padding: 24px 16px 80px; display: grid; gap: 20px; }
+  fieldset { margin: 0; padding: 20px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); display: grid; gap: 14px; min-width: 0; }
+  legend { padding: 0 8px; font-weight: 700; color: var(--accent); }
+  .desc { margin: -6px 0 0; color: var(--muted); font-size: 0.85rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 12px; }
+  .field { display: grid; gap: 4px; min-width: 0; }
+  .field.wide { grid-column: 1 / -1; }
+  .field label { font-size: 0.85rem; color: var(--muted); }
+  .field small { color: var(--muted); font-size: 0.75rem; }
+  .with-pick { display: flex; gap: 6px; }
+  .with-pick input[type=text] { flex: 1; min-width: 0; }
+  input, textarea { width: 100%; padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--fg); font: inherit; }
+  input[type=color] { width: 64px; height: 40px; padding: 2px; }
+  textarea { min-height: 84px; resize: vertical; }
+  input:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: 0; border-color: transparent; }
+  input:user-invalid, textarea:user-invalid { border-color: var(--err); }
+  .row { position: relative; padding: 14px; border: 1px dashed var(--line); border-radius: 10px; display: grid; gap: 10px; }
+  .row-head { display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 0.8rem; }
+  .row-head div { display: flex; gap: 4px; }
+  .btn { display: inline-flex; align-items: center; padding: 8px 14px; border: 1px solid var(--line); border-radius: 999px; background: none; color: var(--fg); font: inherit; font-size: 0.9rem; cursor: pointer; }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn.solid { background: var(--accent); color: #0b0b0c; border-color: var(--accent); font-weight: 600; }
+  .btn.sm { padding: 4px 10px; font-size: 0.8rem; }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Portfolio data</h1>
+  <p>Load <code>src/data/profile.json</code> → fill → Save over it. Draft autosaves in this browser. * = required.</p>
+  <div class="bar">
+    <label class="btn">Load profile.json<input type="file" id="load" accept=".json,application/json" hidden /></label>
+    <button type="button" class="btn solid" id="save">Save profile.json</button>
+    <button type="button" class="btn" id="copy">Copy JSON</button>
+    <button type="button" class="btn" id="clear">Clear draft</button>
+    <span id="status" role="status" aria-live="polite"></span>
+  </div>
+</header>
+
+<form id="form"></form>
+
+<script>
+// type: text (default) | textarea | email | url | color | tags (comma list → array) | file (path + picker)
+const SCHEMA = [
+  { title: 'Identity', fields: [
+    { key: 'name.first', label: 'First name', required: true },
+    { key: 'name.last', label: 'Last name', required: true },
+    { key: 'role', label: 'Role / title', required: true, placeholder: 'Software Engineer' },
+    { key: 'location', label: 'Location', placeholder: 'Cairo, Egypt' },
+    { key: 'tagline', label: 'Tagline (one line)', type: 'textarea', required: true, wide: true },
+    { key: 'accent', label: 'Accent color', type: 'color', hint: 'Themes the whole site' },
+  ]},
+  { title: 'Contact & files', desc: 'Pick a file to fill its path, then copy that file into protifolio/public/ at the same path.', fields: [
+    { key: 'email', label: 'Email', type: 'email', required: true },
+    { key: 'resume', label: 'Resume PDF', type: 'file', dir: '/', accept: '.pdf' },
+    { key: 'portrait', label: 'Hero portrait', type: 'file', dir: '/img/', hint: 'Transparent-background cutout (PNG/WebP)' },
+    { key: 'portraitHover', label: 'Portrait hover image', type: 'file', dir: '/img/', hint: 'Revealed on hover. Same size & framing as the portrait so they line up' },
+    { key: 'signature', label: 'Signature', type: 'file', dir: '/img/', accept: '.svg,image/*' },
+    { key: 'rive.loader', label: 'Loader animation (.riv)', type: 'file', dir: '/rive/', accept: '.riv' },
+  ]},
+  { title: 'Message', fields: [
+    { key: 'message.eyebrow', label: 'Small heading', placeholder: 'A message from me' },
+    { key: 'message.body', label: 'Mission statement', type: 'textarea', wide: true },
+    { key: 'message.quote', label: 'Personal quote', type: 'textarea', wide: true },
+  ]},
+  { title: 'Gallery — career moments', list: 'gallery', itemLabel: 'Moment', fields: [
+    { key: 'src', label: 'Photo', type: 'file', dir: '/img/gallery/' },
+    { key: 'caption', label: 'Caption' },
+    { key: 'date', label: 'Date / year' },
+  ]},
+  { title: 'Professional / Personal cards', list: 'split', itemLabel: 'Card', fields: [
+    { key: 'label', label: 'Label' },
+    { key: 'title', label: 'Title' },
+    { key: 'href', label: 'Links to', placeholder: '#work' },
+    { key: 'image', label: 'Background image', type: 'file', dir: '/img/' },
+    { key: 'text', label: 'Text', type: 'textarea', wide: true },
+  ]},
+  { title: 'Projects', list: 'projects', itemLabel: 'Project', fields: [
+    { key: 'name', label: 'Name', required: true },
+    { key: 'year', label: 'Year' },
+    { key: 'stack', label: 'Stack', type: 'tags', placeholder: 'React, Node, Docker', hint: 'Comma separated' },
+    { key: 'image', label: 'Cover image', type: 'file', dir: '/img/projects/' },
+    { key: 'live', label: 'Live URL', type: 'url' },
+    { key: 'repo', label: 'Repo URL', type: 'url' },
+    { key: 'blurb', label: 'One-liner', type: 'textarea', wide: true },
+  ]},
+  { title: 'Timeline', list: 'timeline', itemLabel: 'Event', fields: [
+    { key: 'date', label: 'Date' },
+    { key: 'title', label: 'Title' },
+    { key: 'place', label: 'Company / place' },
+  ]},
+  { title: 'Logos marquee', list: 'logos', itemLabel: 'Logo', desc: 'Name shows as text until a logo file is set.', fields: [
+    { key: 'name', label: 'Name', required: true },
+    { key: 'src', label: 'Logo file', type: 'file', dir: '/img/logos/', accept: '.svg,image/*' },
+  ]},
+  { title: 'Socials', list: 'socials', itemLabel: 'Link', fields: [
+    { key: 'name', label: 'Platform' },
+    { key: 'handle', label: 'Handle' },
+    { key: 'href', label: 'URL', type: 'url', placeholder: 'https://… or mailto:…', validate: false },
+  ]},
+  { title: 'Navigation', list: 'nav', itemLabel: 'Link', desc: 'Anchors: #top #about #work #timeline', fields: [
+    { key: 'label', label: 'Label' },
+    { key: 'href', label: 'Href' },
+  ]},
+];
+
+const DRAFT = 'portfolio-profile-draft';
+const form = document.getElementById('form');
+const statusEl = document.getElementById('status');
+let uid = 0;
+
+const get = (o, path) => path.split('.').reduce((a, k) => a?.[k], o);
+const set = (o, path, v) => {
+  const ks = path.split('.'); const last = ks.pop();
+  ks.reduce((a, k) => (a[k] ??= {}), o)[last] = v;
+};
+const say = (msg, err = false) => { statusEl.textContent = msg; statusEl.classList.toggle('err', err); };
+const el = (tag, props = {}, ...kids) => { const n = Object.assign(document.createElement(tag), props); n.append(...kids); return n; };
+
+function field(f, value) {
+  const id = `f${uid++}`;
+  const wrap = el('div', { className: 'field' + (f.wide ? ' wide' : '') },
+    el('label', { htmlFor: id, textContent: f.label + (f.required ? ' *' : '') }));
+  const input = f.type === 'textarea' ? el('textarea') : el('input', {
+    type: f.validate === false ? 'text' : ({ email: 'email', url: 'url', color: 'color' }[f.type] || 'text'),
+  });
+  Object.assign(input, { id, required: !!f.required, placeholder: f.placeholder || '' });
+  input.dataset.key = f.key;
+  input.dataset.type = f.type || 'text';
+  input.value = Array.isArray(value) ? value.join(', ') : (value ?? (f.type === 'color' ? '#d4ff3a' : ''));
+
+  if (f.type === 'file') {
+    const picker = el('input', { type: 'file', accept: f.accept || 'image/*', hidden: true });
+    picker.addEventListener('change', () => {
+      if (!picker.files[0]) return;
+      input.value = f.dir + picker.files[0].name;
+      persist();
+    });
+    const pick = el('button', { type: 'button', className: 'btn sm', textContent: 'Pick…', onclick: () => picker.click() });
+    wrap.append(el('div', { className: 'with-pick' }, input, pick, picker));
+    input.placeholder = f.dir + 'file.ext';
+  } else {
+    wrap.append(input);
+  }
+  if (f.hint) wrap.append(el('small', { textContent: f.hint }));
+  return wrap;
+}
+
+function row(sec, container, values = {}) {
+  const r = el('div', { className: 'row' });
+  const move = (dir) => {
+    const sib = dir < 0 ? r.previousElementSibling : r.nextElementSibling;
+    if (sib) dir < 0 ? sib.before(r) : sib.after(r);
+    persist();
+  };
+  r.append(
+    el('div', { className: 'row-head' },
+      el('span', { textContent: sec.itemLabel }),
+      el('div', {},
+        el('button', { type: 'button', className: 'btn sm', textContent: '↑', ariaLabel: 'Move up', onclick: () => move(-1) }),
+        el('button', { type: 'button', className: 'btn sm', textContent: '↓', ariaLabel: 'Move down', onclick: () => move(1) }),
+        el('button', { type: 'button', className: 'btn sm', textContent: 'Remove', onclick: () => { r.remove(); persist(); } }),
+      )),
+    el('div', { className: 'grid' }, ...sec.fields.map((f) => field(f, values[f.key]))),
+  );
+  container.append(r);
+}
+
+function render(data = {}) {
+  form.textContent = '';
+  for (const sec of SCHEMA) {
+    const fs = el('fieldset', {}, el('legend', { textContent: sec.title }));
+    if (sec.desc) fs.append(el('p', { className: 'desc', textContent: sec.desc }));
+    if (sec.list) {
+      const rows = el('div', { className: 'rows', style: 'display:grid;gap:10px' });
+      rows.dataset.list = sec.list;
+      const items = get(data, sec.list);
+      (items?.length ? items : [{}]).forEach((v) => row(sec, rows, v));
+      fs.append(rows, el('button', {
+        type: 'button', className: 'btn', textContent: `+ Add ${sec.itemLabel.toLowerCase()}`,
+        onclick: () => { row(sec, rows); persist(); },
+      }));
+    } else {
+      fs.dataset.scalar = '';
+      fs.append(el('div', { className: 'grid' }, ...sec.fields.map((f) => field(f, get(data, f.key)))));
+    }
+    form.append(fs);
+  }
+}
+
+function read(root, target = {}) {
+  root.querySelectorAll('[data-key]').forEach((i) => set(target, i.dataset.key,
+    i.dataset.type === 'tags' ? i.value.split(',').map((s) => s.trim()).filter(Boolean) : i.value.trim()));
+  return target;
+}
+
+function collect() {
+  const out = {};
+  form.querySelectorAll('fieldset[data-scalar]').forEach((fs) => read(fs, out));
+  form.querySelectorAll('[data-list]').forEach((list) =>
+    set(out, list.dataset.list, [...list.children].map((r) => read(r)).filter((o) => Object.values(o).some((v) => v.length))));
+  return out;
+}
+
+function persist() {
+  try { localStorage.setItem(DRAFT, JSON.stringify(collect())); say('Draft saved'); } catch { /* storage blocked: form still works */ }
+}
+
+const toJson = () => JSON.stringify(collect(), null, 2) + '\n';
+
+async function saveFile() {
+  if (!form.reportValidity()) return say('Fix the highlighted fields', true);
+  const json = toJson();
+  if ('showSaveFilePicker' in window) {
+    try {
+      const h = await showSaveFilePicker({ suggestedName: 'profile.json', types: [{ description: 'JSON', accept: { 'application/json': ['.json'] } }] });
+      const w = await h.createWritable(); await w.write(json); await w.close();
+      return say('Saved — refresh the dev server page');
+    } catch (e) { if (e.name === 'AbortError') return; }
+  }
+  const a = el('a', { href: URL.createObjectURL(new Blob([json], { type: 'application/json' })), download: 'profile.json' });
+  a.click(); URL.revokeObjectURL(a.href);
+  say('Downloaded — move it to protifolio/src/data/profile.json');
+}
+
+document.getElementById('save').onclick = saveFile;
+document.getElementById('copy').onclick = () => navigator.clipboard.writeText(toJson()).then(() => say('JSON copied'), () => say('Copy blocked by browser', true));
+document.getElementById('clear').onclick = () => {
+  if (!confirm('Clear the draft and all fields?')) return;
+  try { localStorage.removeItem(DRAFT); } catch {}
+  render(); say('Cleared');
+};
+document.getElementById('load').onchange = async (e) => {
+  const file = e.target.files[0]; if (!file) return;
+  try { render(JSON.parse(await file.text())); persist(); say(`Loaded ${file.name}`); }
+  catch { say('Not valid JSON', true); }
+  e.target.value = '';
+};
+
+let t;
+form.addEventListener('input', () => { clearTimeout(t); t = setTimeout(persist, 400); });
+
+let draft = null;
+try { draft = JSON.parse(localStorage.getItem(DRAFT)); } catch {}
+render(draft || {});
+if (draft) say('Draft restored');
+</script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+---
+// Image when `src` is set, otherwise a labelled placeholder block of the same size.
+interface Props { src?: string; alt: string; label?: string; class?: string }
+const { src, alt, label = alt, class: cls = '' } = Astro.props;
+---
+{src
+  ? <img class={`media ${cls}`} src={src} alt={alt} loading="lazy" decoding="async" />
+  : <div class={`media ph ${cls}`} role="img" aria-label={alt}><span>{label}</span></div>}

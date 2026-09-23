@@ -1,0 +1,42 @@
+---
+import { profile } from '../data/profile';
+import Media from './Media.astro';
+---
+<section class="section projects" id="work">
+  <div class="section__head">
+    <h2 class="display" data-split>Project hall of fame</h2>
+    <div class="projects__ctrl">
+      <button class="round" data-dir="-1" aria-label="Previous project">←</button>
+      <button class="round" data-dir="1" aria-label="Next project">→</button>
+    </div>
+  </div>
+  <ul class="projects__rail" data-rail>
+    {profile.projects.map((p) => (
+      <li class="card">
+        <div class="card__media">
+          <Media src={p.image} alt={p.name} label={p.year} />
+        </div>
+        <div class="card__body">
+          <span class="card__year">{p.year}</span>
+          <h3>{p.name}</h3>
+          <p>{p.blurb}</p>
+          <ul class="chips">{p.stack.map((t) => <li>{t}</li>)}</ul>
+          <div class="card__links">
+            {p.live && <a href={p.live} target="_blank" rel="noopener">Live ↗</a>}
+            {p.repo && <a href={p.repo} target="_blank" rel="noopener">Code ↗</a>}
+          </div>
+        </div>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<script>
+  const rail = document.querySelector<HTMLElement>('[data-rail]')!;
+  document.querySelectorAll<HTMLButtonElement>('.projects__ctrl button').forEach((b) =>
+    b.addEventListener('click', () => {
+      const card = rail.firstElementChild as HTMLElement;
+      rail.scrollBy({ left: Number(b.dataset.dir) * (card.offsetWidth + 24), behavior: 'smooth' });
+    }),
+  );
+</script>

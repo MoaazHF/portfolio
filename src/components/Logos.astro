@@ -1,0 +1,14 @@
+---
+import { profile } from '../data/profile';
+// list rendered twice so the CSS marquee loops seamlessly
+const items = [...profile.logos, ...profile.logos];
+---
+<section class="logos" aria-label="Worked with">
+  <div class="logos__track">
+    {items.map((l, i) => (
+      <div class="logos__item" aria-hidden={i >= profile.logos.length ? 'true' : undefined}>
+        {l.src ? <img src={l.src} alt={l.name} loading="lazy" /> : l.name}
+      </div>
+    ))}
+  </div>
+</section>

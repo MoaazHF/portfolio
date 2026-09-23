@@ -1,0 +1,15 @@
+---
+import { profile } from '../data/profile';
+---
+<section class="section timeline" id="timeline">
+  <h2 class="display" data-split>Timeline</h2>
+  <ol>
+    {profile.timeline.map((t) => (
+      <li data-reveal>
+        <span class="timeline__date">{t.date}</span>
+        <span class="timeline__title">{t.title}</span>
+        <span class="timeline__place">{t.place}</span>
+      </li>
+    ))}
+  </ol>
+</section>

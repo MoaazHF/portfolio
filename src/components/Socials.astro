@@ -1,0 +1,17 @@
+---
+import { profile } from '../data/profile';
+---
+<section class="section socials">
+  <h2 class="display" data-split>What's up on socials</h2>
+  <ul class="socials__grid">
+    {profile.socials.map((s) => (
+      <li data-reveal>
+        <a href={s.href} target="_blank" rel="noopener">
+          <span class="socials__name">{s.name}</span>
+          <span class="socials__handle">{s.handle}</span>
+          <span aria-hidden="true">↗</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</section>

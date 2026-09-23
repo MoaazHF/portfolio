@@ -1,0 +1,16 @@
+---
+import { profile } from '../data/profile';
+---
+<footer class="footer">
+  <div class="footer__cols">
+    <nav aria-label="Footer">
+      {profile.nav.map((l) => <a href={l.href}>{l.label}</a>)}
+    </nav>
+    <nav aria-label="Social">
+      {profile.socials.map((s) => <a href={s.href} target="_blank" rel="noopener">{s.name}</a>)}
+    </nav>
+    <a class="footer__mail" href={`mailto:${profile.email}`}>{profile.email}</a>
+  </div>
+  <p class="footer__word" aria-hidden="true">{profile.name.last}</p>
+  <p class="footer__legal">© {new Date().getFullYear()} {profile.name.first} {profile.name.last}</p>
+</footer>
