@@ -3,7 +3,7 @@ import * as THREE from 'three';
 const REVEAL = 0.22; // hover circle radius as a fraction of the portrait height
 const DEPTH = 0.16; // relief depth as a fraction of the portrait height
 const FLOAT = 0.012; // vertical bob as a fraction of the portrait height
-const TILT = [0.08, 0.16]; // max cursor tilt (radians) around x, y — lower = less sensitive
+const TILT = [0.04, 0.08]; // max cursor tilt (radians) around x, y — lower = less sensitive
 const SEGMENTS = [180, 226]; // mesh resolution (x, y) — more = smoother relief
 const ASCII_ROWS = 72; // character rows across the portrait height
 const ASCII_CHARS = ' .:-=+*#%@'; // dark → bright
