@@ -15,7 +15,7 @@ if (riveCanvases.length) {
 
 // ── Smooth scroll
 if (!reduce) {
-  const lenis = new Lenis();
+  const lenis = new Lenis({ syncTouch: true }); // smooth touch scrolling too (default leaves it native)
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add((t) => lenis.raf(t * 1000));
   gsap.ticker.lagSmoothing(0);
@@ -94,10 +94,10 @@ function initScrollAnimations(delay = 0) {
     });
   });
 
-  // pinned horizontal gallery on wide screens; native swipe-scroll below 768px
+  // pinned horizontal gallery; native swipe-scroll only with reduced motion
   const track = document.querySelector<HTMLElement>('[data-hscroll]');
   if (track) {
-    mm.add('(min-width: 768px) and (prefers-reduced-motion: no-preference)', () => {
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
       const distance = () => track.scrollWidth - innerWidth;
       gsap.to(track, {
         x: () => -distance(), ease: 'none',
