@@ -111,7 +111,7 @@ ul, ol { list-style: none; padding: 0; }
 .hgallery__item .media { aspect-ratio: 3 / 4; border-radius: var(--radius); }
 .hgallery__item figcaption { display: flex; gap: 12px; margin-top: 14px; color: var(--muted); }
 .hgallery__item figcaption span { color: var(--accent-text); font-weight: 700; }
-@media (max-width: 767px), (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion: reduce) {
   .hgallery { overflow-x: auto; scroll-snap-type: x mandatory; }
   .hgallery__track { min-height: auto; padding-block: 80px; }
   .hgallery__item { scroll-snap-align: center; }
