@@ -6,6 +6,9 @@ const FLOAT = 0.012; // vertical bob as a fraction of the portrait height
 const SEGMENTS = [180, 226]; // mesh resolution (x, y) — more = smoother relief
 const ASCII_ROWS = 72; // character rows across the portrait height
 const ASCII_CHARS = ' .:-=+*#%@'; // dark → bright
+const SCAN_TIME = 1.8; // seconds for the auto scan line to cross the portrait
+const GLITCH_TIME = 0.35; // seconds per glitch burst
+const FX_GAP = [4, 8]; // random pause (s) between automatic scan / glitch events
 
 const vertexShader = /* glsl */ `
   uniform sampler2D uDepthMap;
@@ -31,6 +34,8 @@ const fragmentShader = /* glsl */ `
   uniform vec2 uSlope;   // converts depth deltas into surface slope
   uniform vec3 uLight;   // light direction in object space
   uniform vec3 uAccent;
+  uniform float uScan;   // 0..1 auto scan progress (0 and 1 are both off-image)
+  uniform float uGlitch; // 0..1 glitch burst strength
   varying vec2 vUv;
 
   float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -42,10 +47,17 @@ const fragmentShader = /* glsl */ `
     float ang = atan(d.y, d.x);
     float r = uReveal * (${REVEAL.toFixed(3)} + sin(ang * 5.0 + uTime * 2.0) * 0.015 + sin(ang * 3.0 - uTime * 1.3) * 0.015);
 
+    // glitch: random horizontal slices jump sideways and flip to ASCII
+    float slice = floor(vUv.y * 28.0);
+    float tick = floor(uTime * 20.0);
+    float glitch = step(1.0 - uGlitch * 0.4, hash(vec2(slice, tick)));
+    vec2 uv = vUv + vec2((hash(vec2(tick, slice)) - 0.5) * 0.1 * glitch, 0.0);
+
     // ripple just outside the ring
     float ripple = exp(-pow((len - r) * 16.0, 2.0)) * uReveal;
-    vec2 baseUv = vUv + (d / len) / aspect * sin(len * 90.0 - uTime * 8.0) * ripple * 0.006;
+    vec2 baseUv = uv + (d / len) / aspect * sin(len * 90.0 - uTime * 8.0) * ripple * 0.006;
     vec4 base = texture2D(uMap, baseUv);
+    base.r = texture2D(uMap, baseUv + vec2(0.012 * glitch, 0.0)).r; // RGB split on glitched slices
 
     // surface normal from the depth map → lighting that shifts as the model turns
     vec2 e = vec2(0.004, 0.0);
@@ -60,19 +72,24 @@ const fragmentShader = /* glsl */ `
     // hover layer: the same photo as ASCII art (cells stick to the surface)
     const float N = ${ASCII_CHARS.length.toFixed(1)};
     vec2 grid = vec2(floor(uRows * uAspect / 0.6), uRows); // glyph cells are 0.6 as wide as tall
-    vec2 cell = floor(vUv * grid);
+    vec2 cell = floor(uv * grid);
     vec4 src = texture2D(uMap, (cell + 0.5) / grid);
     float l = dot(src.rgb, vec3(0.2126, 0.7152, 0.0722));
     l = clamp(pow(l, 0.6) * 1.25 + (hash(cell + floor(uTime * 8.0)) - 0.5) * 0.1, 0.0, 1.0); // lift darks + flicker
     float gi = floor(l * (N - 1.0) + 0.5);
-    vec2 local = fract(vUv * grid);
+    vec2 local = fract(uv * grid);
     float glyph = texture2D(uAscii, vec2((gi + local.x) / N, local.y)).r;
     vec4 alt = vec4(mix(uAccent * 1.6, vec3(1.0), l * 0.7) * glyph, src.a);
 
-    float m = 1.0 - smoothstep(r - 0.012, r, len);
+    // auto scan: a line sweeps top → bottom, leaving a dithered ASCII band that decays behind it
+    float behind = vUv.y - (1.2 - uScan * 1.4); // > 0 = already scanned; start/end stay off-image
+    float scan = step(0.0, behind + (hash(cell) - 0.5) * 0.03) * (1.0 - smoothstep(0.02, 0.18, behind + hash(cell + 7.0) * 0.05));
+    float line = exp(-pow(behind * 250.0, 2.0));
+
+    float m = max(1.0 - smoothstep(r - 0.012, r, len), max(scan, glitch));
     float ring = (smoothstep(r - 0.012, r, len) - smoothstep(r, r + 0.004, len)) * uReveal;
     vec4 col = mix(base, alt, m);
-    col.rgb += uAccent * ring * max(base.a, alt.a);
+    col.rgb += uAccent * (ring + line * 1.5) * max(base.a, alt.a);
     col.a *= smoothstep(0.0, 0.14, vUv.x) * smoothstep(0.0, 0.14, 1.0 - vUv.x);
     if (col.a < 0.01) discard; // keeps transparent areas out of the depth buffer
     gl_FragColor = col;
@@ -102,6 +119,8 @@ export function initPortrait(canvas: HTMLCanvasElement, img: HTMLImageElement) {
     uSlope: { value: new THREE.Vector2(1, 1) },
     uLight: { value: new THREE.Vector3(0, 0, 1) },
     uAccent: { value: new THREE.Color(css.getPropertyValue('--accent').trim() || '#2e5eb6') },
+    uScan: { value: 0 },
+    uGlitch: { value: 0 },
   };
 
   // 1×1 black texture = flat surface until (or unless) a depth map loads
@@ -178,8 +197,14 @@ export function initPortrait(canvas: HTMLCanvasElement, img: HTMLImageElement) {
     const hit = ray.intersectObject(mesh)[0];
     if (hit?.uv) { target.x = hit.uv.x; target.y = hit.uv.y; }
   }, { passive: true });
+  // automatic scan / glitch events; hovering also kicks off a glitch
+  let fx = { kind: '', start: 0, next: 1.5 };
+  const trigger = (kind: string, t: number) =>
+    (fx = { kind, start: t, next: t + FX_GAP[0] + Math.random() * (FX_GAP[1] - FX_GAP[0]) });
+
   img.addEventListener('pointerenter', (e) => {
     target.reveal = 1;
+    if (!reduce) trigger('glitch', clock.elapsedTime);
     dispatchEvent(new PointerEvent('pointermove', e)); // resolve the entry point immediately
     if (u.uReveal.value < 0.01) u.uMouse.value.set(target.x, target.y);
   });
@@ -212,6 +237,11 @@ export function initPortrait(canvas: HTMLCanvasElement, img: HTMLImageElement) {
     u.uMouse.value.y += (target.y - u.uMouse.value.y) * k;
     u.uReveal.value += (target.reveal - u.uReveal.value) * ease(0.1);
     u.uTime.value = t;
+
+    if (!reduce && t > fx.next) trigger(Math.random() < 0.6 ? 'scan' : 'glitch', t);
+    const p = t - fx.start;
+    u.uScan.value = fx.kind === 'scan' ? Math.min(p / SCAN_TIME, 1) : 0;
+    u.uGlitch.value = fx.kind === 'glitch' && p < GLITCH_TIME ? 1 - p / GLITCH_TIME : 0;
     renderer.render(scene, camera);
   };
   frame();
