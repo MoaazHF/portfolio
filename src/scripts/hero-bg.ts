@@ -47,7 +47,7 @@ const fragmentShader = /* glsl */ `
 export function initHeroBg(canvas: HTMLCanvasElement) {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+  renderer.setPixelRatio(1); // faint full-screen lines: 1x looks the same and shades 2–4x fewer pixels
 
   const css = getComputedStyle(document.documentElement);
   const u = {
