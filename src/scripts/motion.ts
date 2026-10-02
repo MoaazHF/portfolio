@@ -5,6 +5,11 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+// WebGL contexts are expensive to create (the biggest load cost here): make them only on approach.
+// (Tried pre-creating in idle time after load: more long tasks, no scroll gain — reverted.)
+export const whenNear = (el: Element, fn: () => void, margin = '50%') =>
+  new IntersectionObserver(([e], io) => { if (e.isIntersecting) { io.disconnect(); fn(); } }, { rootMargin: `${margin} 0px` }).observe(el);
+
 // ── Rive: any <canvas data-rive="/rive/x.riv"> plays automatically
 const riveCanvases = document.querySelectorAll<HTMLCanvasElement>('canvas[data-rive]');
 if (riveCanvases.length) {
