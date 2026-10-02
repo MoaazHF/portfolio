@@ -2,6 +2,7 @@
 import { profile } from '../data/profile';
 ---
 <section class="cta">
+  <canvas class="cta__bg" data-gradient aria-hidden="true"></canvas>
   <p class="eyebrow">Available for work</p>
   <h2 class="cta__title" data-split>Let's build something fast</h2>
   <div class="cta__actions" data-reveal>
@@ -9,3 +10,9 @@ import { profile } from '../data/profile';
     <a class="btn" href={profile.resume} target="_blank" rel="noopener">Download resume</a>
   </div>
 </section>
+
+<script>
+  import { whenNear } from '../scripts/motion';
+  const bg = document.querySelector<HTMLCanvasElement>('[data-gradient]');
+  if (bg) whenNear(bg, () => import('../scripts/gradient').then((m) => m.initGradient(bg)));
+</script>

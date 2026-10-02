@@ -168,7 +168,9 @@ ul, ol { list-style: none; padding: 0; }
 @media (max-width: 767px) { .timeline li { grid-template-columns: 1fr; gap: 4px; } }
 
 /* ── cta */
-.cta { margin: 0 var(--gutter); padding: clamp(64px, 10vw, 140px) var(--gutter); border-radius: calc(var(--radius) * 2); background: var(--accent); color: var(--on-accent); text-align: center; }
+.cta { position: relative; isolation: isolate; overflow: hidden; margin: 0 var(--gutter); padding: clamp(64px, 10vw, 140px) var(--gutter); border-radius: calc(var(--radius) * 2); background: var(--accent); color: var(--on-accent); text-align: center; }
+.cta__bg { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; opacity: 0; transition: opacity 1.2s; }
+.cta__bg.is-live { opacity: 1; }
 .cta .eyebrow { color: inherit; }
 .cta__title { margin: 16px auto 40px; max-width: 14ch; font: 400 clamp(3rem, 9vw, 8rem)/0.9 var(--display); text-transform: uppercase; }
 .cta__actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
