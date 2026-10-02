@@ -10,6 +10,12 @@ import { profile } from '../data/profile';
   <button class="nav__burger" aria-controls="menu" aria-expanded="false" aria-label="Toggle menu">
     <span></span><span></span>
   </button>
+  <svg class="nav__defs" aria-hidden="true">
+    <filter id="nav-glass" x="0" y="0" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feImage result="map" x="0" y="0" preserveAspectRatio="none" />
+      <feDisplacementMap in="SourceGraphic" in2="map" scale="0" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+  </svg>
 </header>
 
 <script>
@@ -21,6 +27,50 @@ import { profile } from '../data/profile';
   };
   btn.addEventListener('click', () => setOpen(btn.getAttribute('aria-expanded') !== 'true'));
   nav.querySelectorAll('#menu a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+
+  // liquid glass: refract the backdrop through a lens-edge displacement map.
+  // backdrop-filter: url() only works in Chromium; elsewhere the plain frosted pill stays.
+  if ('userAgentData' in navigator && CSS.supports('backdrop-filter', 'url(#a)')) {
+    const BEZEL = 22; // px of curved rim
+    const STRENGTH = 36; // max refraction offset, px
+    const filter = nav.querySelector('filter')!;
+    const image = filter.querySelector('feImage')!;
+    filter.querySelector('feDisplacementMap')!.setAttribute('scale', String(STRENGTH));
+    const build = () => {
+      const w = Math.round(nav.offsetWidth), h = Math.round(nav.offsetHeight);
+      if (!w || !h) return;
+      for (const n of [filter, image]) { n.setAttribute('width', String(w)); n.setAttribute('height', String(h)); }
+      image.setAttribute('href', lensMap(w, h, BEZEL));
+    };
+    new ResizeObserver(build).observe(nav);
+    nav.classList.add('is-glass');
+  }
+
+  // R/G = x/y sample offset (0.5 = none). Near the pill's rim, sample inward → backdrop bends at the edge.
+  function lensMap(w: number, h: number, bezel: number) {
+    const c = document.createElement('canvas');
+    c.width = w;
+    c.height = h;
+    const g = c.getContext('2d')!;
+    const img = g.createImageData(w, h);
+    const r = h / 2, a = w / 2 - r;
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const px = x + 0.5 - w / 2, py = y + 0.5 - h / 2;
+        const dx = px - Math.max(-a, Math.min(a, px)); // vector from pill spine
+        const len = Math.hypot(dx, py) || 1;
+        const depth = r - len; // distance inside the rim
+        const k = depth > 0 && depth < bezel ? (1 - depth / bezel) ** 2 : 0;
+        const i = (y * w + x) * 4;
+        img.data[i] = 128 - (dx / len) * k * 127;
+        img.data[i + 1] = 128 - (py / len) * k * 127;
+        img.data[i + 2] = 128;
+        img.data[i + 3] = 255;
+      }
+    }
+    g.putImageData(img, 0, 0);
+    return c.toDataURL();
+  }
 
   // hide on scroll down, reveal on scroll up
   let last = 0;
