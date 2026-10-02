@@ -3,5 +3,6 @@ import { profile } from '../data/profile';
 ---
 <div class="loader" data-loader aria-hidden="true">
   {profile.rive.loader && <canvas class="loader__rive" data-rive={profile.rive.loader} width="320" height="320"></canvas>}
+  {!profile.rive.loader && <p class="loader__mono">{profile.name.first[0]}{profile.name.last[0]}</p>}
   <span class="loader__count" data-loader-count>0</span>
 </div>
