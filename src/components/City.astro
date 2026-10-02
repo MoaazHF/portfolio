@@ -1,0 +1,33 @@
+---
+import { profile } from '../data/profile';
+const city = profile.location.split(',')[0];
+---
+<section class="city" id="city" aria-labelledby="city-title">
+  <div class="city__stage">
+    <canvas class="city__map" role="img" aria-label={`Street map of downtown ${city}, with the Nile`}></canvas>
+    <canvas class="city__lens" aria-hidden="true"></canvas>
+    <div class="city__head">
+      <h2 id="city-title" class="city__title" data-split>{city}, right now</h2>
+      <p class="city__note" data-reveal>Where I write the code. Streets from OpenStreetMap.</p>
+    </div>
+    <p class="city__clock">
+      <span aria-hidden="true">(</span><time data-clock><span data-part="hour">00</span><i>:</i><span data-part="minute">00</span><i>:</i><span data-part="second">00</span></time><span aria-hidden="true">)</span>
+    </p>
+    <p class="city__coords" data-coords>30.0444° N &nbsp;31.2357° E</p>
+  </div>
+</section>
+
+<script>
+  const stage = document.querySelector<HTMLElement>('.city__stage')!;
+  const [map, lens] = stage.querySelectorAll('canvas');
+  const clock = stage.querySelector<HTMLElement>('[data-clock]')!;
+  // load the map module + data only when the section is close
+  new IntersectionObserver(([e], io) => {
+    if (!e.isIntersecting) return;
+    io.disconnect();
+    import('../scripts/city-map').then((m) => {
+      m.initCityMap(map, lens);
+      m.initClock(clock, 'Africa/Cairo');
+    });
+  }, { rootMargin: '600px' }).observe(stage);
+</script>

@@ -194,6 +194,25 @@ ul, ol { list-style: none; padding: 0; }
 .timeline__place { color: var(--muted); }
 @media (max-width: 767px) { .timeline li { grid-template-columns: 1fr; gap: 4px; } }
 
+/* ── city: live clock over the real street map */
+.city { padding: clamp(80px, 12vw, 160px) 0; }
+.city__stage { position: relative; height: min(100svh, 62vw); min-height: 560px; overflow: hidden; border-block: 1px solid var(--line); cursor: none; }
+.city__map, .city__lens { position: absolute; inset: 0; width: 100%; height: 100%; }
+.city__lens { pointer-events: none; }
+.city__head { position: absolute; top: 40px; left: var(--gutter); max-width: 28ch; pointer-events: none; }
+.city__title { font: 400 clamp(2.6rem, 6vw, 5.5rem)/0.92 var(--display); text-transform: uppercase; }
+.city__note { margin-top: 12px; color: var(--muted); text-shadow: 0 0 8px var(--bg), 0 0 16px var(--bg); }
+.city__clock { position: absolute; left: var(--gutter); right: var(--gutter); bottom: 64px; display: flex; justify-content: space-between; align-items: center; font: 400 clamp(4rem, 15vw, 15rem)/0.8 var(--display); pointer-events: none; }
+.city__clock time { display: contents; }
+.city__clock i { font-style: normal; color: var(--accent-text); }
+.city__clock > span { color: var(--muted); font-weight: 400; }
+.city__coords { position: absolute; left: var(--gutter); bottom: 24px; color: var(--muted); font-size: 0.85rem; font-variant-numeric: tabular-nums; pointer-events: none; }
+@media (pointer: coarse) { .city__stage { cursor: auto; } }
+@media (max-width: 767px) {
+  .city__stage { height: 100svh; }
+  .city__clock { bottom: 72px; }
+}
+
 /* ── cta */
 .cta { position: relative; isolation: isolate; overflow: hidden; margin: 0 var(--gutter); padding: clamp(64px, 10vw, 140px) var(--gutter); border-radius: calc(var(--radius) * 2); background: var(--accent); color: var(--on-accent); text-align: center; }
 .cta__bg { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; opacity: 0; transition: opacity 1.2s; }
