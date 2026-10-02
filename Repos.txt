@@ -1,0 +1,10 @@
+https://github.com/ruucm/shadergradient
+https://github.com/dashersw/liquid-glass-js
+https://github.com/zappar-xr/zappar-react-three-fiber-examples
+https://github.com/collidingScopes/liquid-logo
+https://www.vantajs.com/?effect=halo
+https://reactbits.dev/
+
+I need yo uanalyze them and make a plan to use this libraries and repos please
+https://bleibtgleich.dev/
+https://terraink.app/
