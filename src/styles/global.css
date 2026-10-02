@@ -156,6 +156,13 @@ ul, ol { list-style: none; padding: 0; }
 .split__arrow { position: absolute; right: 32px; bottom: 32px; font-size: 2rem; transition: transform 0.3s, color 0.3s; }
 .split__card:hover .split__arrow { transform: translateX(8px); color: var(--accent); }
 
+/* ── project vortex (pinned intro before the rail) */
+.vortex { position: relative; height: 100svh; overflow: hidden; } /* no margins: pinned elements must measure their true box */
+.vortex canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.vortex__words { position: absolute; inset: 0; display: flex; justify-content: space-between; align-items: center; padding: 0 clamp(16px, 10vw, 160px); font: 400 clamp(3.5rem, 13vw, 13rem)/1 var(--display); text-transform: uppercase; }
+.vortex__words span:last-child { color: var(--accent); }
+@media (prefers-reduced-motion: reduce) { .vortex { display: none; } }
+
 /* ── projects */
 .projects__ctrl { display: flex; gap: 12px; flex-shrink: 0; }
 .projects__rail { display: flex; gap: 24px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin-inline: calc(-1 * var(--gutter)); padding-inline: var(--gutter); scroll-padding-inline: var(--gutter); }

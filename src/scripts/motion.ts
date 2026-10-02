@@ -161,4 +161,25 @@ function initScrollAnimations(delay = 0) {
       });
     });
   }
+
+  // project vortex: pinned while the camera flies through the cards (created after the gallery pin,
+  // so ScrollTrigger measures them in page order)
+  const vortex = document.querySelector<HTMLElement>('[data-vortex]');
+  if (vortex) {
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      let progress = 0;
+      let render: ((p: number) => void) | undefined;
+      whenNear(vortex, () =>
+        Promise.all([import('./vortex'), document.fonts.load('400 92px Anton')]).then(([m]) => {
+          render = m.initVortex(vortex.querySelector('canvas')!, JSON.parse(vortex.dataset.projects!));
+          render(progress);
+        }),
+      );
+      ScrollTrigger.create({
+        trigger: vortex, pin: true, start: 'top top', end: '+=160%',
+        onUpdate: (s) => { progress = s.progress; render?.(progress); },
+      });
+    });
+  }
+
 }

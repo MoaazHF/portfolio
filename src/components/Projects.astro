@@ -1,7 +1,13 @@
 ---
 import { profile } from '../data/profile';
 import Media from './Media.astro';
+const years = profile.projects.map((p) => Number(p.year)).filter(Boolean);
+const range = years.length ? `’${String(Math.min(...years)).slice(2)}–’${String(Math.max(...years)).slice(2)}` : '';
 ---
+<div class="vortex" data-vortex data-projects={JSON.stringify(profile.projects)}>
+  <p class="vortex__words" aria-hidden="true"><span>Work</span><span>{range}</span></p>
+  <canvas aria-hidden="true"></canvas>
+</div>
 <section class="section projects" id="work">
   <div class="section__head">
     <h2 class="display" data-split>Project hall of fame</h2>
