@@ -182,4 +182,23 @@ function initScrollAnimations(delay = 0) {
     });
   }
 
+  // logos marquee follows scroll speed and direction (Web Animations playbackRate: no restart jump)
+  const marquee = document.querySelector<HTMLElement>('.logos__track')?.getAnimations()[0];
+  if (marquee) {
+    mm.add('(prefers-reduced-motion: no-preference)', () => {
+      let rate = 1;
+      ScrollTrigger.create({
+        onUpdate: (s) => {
+          const v = s.getVelocity() / 250; // px/s → speed multiple
+          if (v) rate = Math.sign(v) * gsap.utils.clamp(1, 6, Math.abs(v)); // never slower than cruising
+        },
+      });
+      const ease = () => {
+        rate += ((rate < 0 ? -1 : 1) - rate) * 0.05; // settle back to cruising speed, keeping direction
+        marquee.playbackRate = rate;
+      };
+      gsap.ticker.add(ease);
+      return () => gsap.ticker.remove(ease);
+    });
+  }
 }
