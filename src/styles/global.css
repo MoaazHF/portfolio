@@ -146,6 +146,9 @@ ul, ol { list-style: none; padding: 0; }
 .projects__rail { display: flex; gap: 24px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin-inline: calc(-1 * var(--gutter)); padding-inline: var(--gutter); scroll-padding-inline: var(--gutter); }
 .projects__rail::-webkit-scrollbar { display: none; }
 .card { flex: 0 0 clamp(280px, 30vw, 420px); scroll-snap-align: start; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--bg-2); transition: border-color 0.3s, transform 0.4s; }
+.card { position: relative; }
+.card::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity 0.4s; background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 50%), color-mix(in oklab, var(--accent) 28%, transparent), transparent 70%); }
+.card:hover::after { opacity: 1; }
 .card:hover { border-color: var(--accent); transform: translateY(-6px); }
 .card__media { aspect-ratio: 4 / 3; overflow: hidden; }
 .card__media .media { transition: transform 0.8s; }
