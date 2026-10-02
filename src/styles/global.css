@@ -115,7 +115,15 @@ ul, ol { list-style: none; padding: 0; }
 .hero__scroll { position: absolute; right: var(--gutter); bottom: 32px; z-index: 4; font-size: 0.8rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
 
 /* ── message */
-.message { max-width: 1200px; }
+.message { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 34%); gap: 48px; padding-top: 0; }
+.message__text { max-width: 1000px; padding-top: clamp(80px, 12vw, 160px); }
+.message__badge { position: relative; min-height: 640px; }
+.message__badge canvas { position: absolute; inset: 0 calc(-1 * var(--gutter)) 0 -48px; width: calc(100% + var(--gutter) + 48px); height: 100%; touch-action: pan-y; } /* room to swing */
+@media (max-width: 767px) {
+  .message { grid-template-columns: 1fr; gap: 0; }
+  .message__badge { min-height: 520px; order: -1; }
+  .message__text { padding-top: 24px; }
+}
 .message__body { margin: 24px 0 48px; font: 500 clamp(1.6rem, 3.6vw, 3.2rem)/1.2 var(--body); letter-spacing: -0.02em; }
 .message__quote { padding-left: 24px; border-left: 3px solid var(--accent); font-size: clamp(1.1rem, 1.6vw, 1.4rem); color: var(--muted); font-style: italic; }
 
