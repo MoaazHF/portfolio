@@ -27,7 +27,13 @@ const badge = {
     new IntersectionObserver(([e], io) => {
       if (!e.isIntersecting) return;
       io.disconnect();
-      import('../scripts/lanyard').then((m) => m.initLanyard(canvas, JSON.parse(canvas.dataset.lanyard!)));
+      import('../scripts/lanyard').then(async (m) => {
+        const badge = await m.initLanyard(canvas, JSON.parse(canvas.dataset.lanyard!));
+        const hero = document.querySelector<HTMLImageElement>('.hero__portrait');
+        if (!hero || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        const fly = () => import('../scripts/portrait-flight').then((f) => f.initPortraitFlight(hero, badge, document.getElementById('about')!));
+        hero.complete ? fly() : hero.addEventListener('load', fly, { once: true });
+      });
     }, { rootMargin: '400px' }).observe(canvas);
   }
 </script>

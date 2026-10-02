@@ -61,6 +61,10 @@ ul, ol { list-style: none; padding: 0; }
   -webkit-background-clip: text; background-clip: text; animation: chrome 2.4s ease-in-out infinite alternate; }
 @keyframes chrome { to { background-position: 0 100%; } }
 
+/* ── hero portrait → ID badge flight (positioned per frame from JS) */
+.flight { position: fixed; top: 0; left: 0; z-index: 40; overflow: hidden; visibility: hidden; pointer-events: none; will-change: transform; }
+.flight img { position: absolute; top: 0; left: 0; max-width: none; transform-origin: 0 0; }
+
 /* ── click sparks */
 .sparks { position: fixed; inset: 0; z-index: 98; pointer-events: none; }
 
