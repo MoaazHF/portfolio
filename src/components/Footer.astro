@@ -11,6 +11,6 @@ import { profile } from '../data/profile';
     </nav>
     <a class="footer__mail" href={`mailto:${profile.email}`}>{profile.email}</a>
   </div>
-  <p class="footer__word" aria-hidden="true">{profile.name.last}</p>
+  <p class="footer__word" data-metal aria-hidden="true">{profile.name.last}<canvas></canvas></p>
   <p class="footer__legal">© {new Date().getFullYear()} {profile.name.first} {profile.name.last}</p>
 </footer>

@@ -18,6 +18,11 @@ if (riveCanvases.length) {
   );
 }
 
+// ── Liquid metal: any [data-metal] element with a <canvas> child renders its text as metal
+document.querySelectorAll<HTMLElement>('[data-metal]').forEach((el) =>
+  whenNear(el, () => import('./liquid-metal').then((m) => m.initLiquidMetal(el.querySelector('canvas')!, el))),
+);
+
 // ── Smooth scroll
 if (!reduce) {
   const lenis = new Lenis({ syncTouch: true }); // smooth touch scrolling too (default leaves it native)
