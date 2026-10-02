@@ -64,6 +64,52 @@ if (matchMedia('(pointer: fine)').matches && !reduce) {
   document.addEventListener('pointerover', (e) =>
     dot.classList.toggle('is-link', !!(e.target as Element).closest('a, button')),
   );
+
+  // magnetic buttons: pulled a fraction of the way toward the cursor
+  document.querySelectorAll<HTMLElement>('.btn, .round').forEach((el) => {
+    const x = gsap.quickTo(el, 'x', { duration: 0.4, ease: 'power3' });
+    const y = gsap.quickTo(el, 'y', { duration: 0.4, ease: 'power3' });
+    el.addEventListener('pointermove', (e) => {
+      const r = el.getBoundingClientRect();
+      x((e.clientX - r.left - r.width / 2) * 0.3);
+      y((e.clientY - r.top - r.height / 2) * 0.3);
+    });
+    el.addEventListener('pointerleave', () => { x(0); y(0); });
+  });
+
+  // click sparks: short accent burst at the click point
+  const sparks = document.createElement('canvas');
+  sparks.className = 'sparks';
+  document.body.append(sparks);
+  const g = sparks.getContext('2d')!;
+  const color = getComputedStyle(document.documentElement).getPropertyValue('--accent-text');
+  let bursts: { x: number; y: number; t: number }[] = [];
+  const draw = (now: number) => {
+    g.clearRect(0, 0, sparks.width, sparks.height);
+    bursts = bursts.filter((b) => now - b.t < 420);
+    bursts.forEach((b) => {
+      const p = (now - b.t) / 420, ease = 1 - (1 - p) ** 3;
+      g.strokeStyle = color;
+      g.globalAlpha = 1 - p;
+      g.lineWidth = 2;
+      for (let i = 0; i < 8; i++) {
+        const a = (i / 8) * Math.PI * 2, d = 8 + ease * 26, len = 10 * (1 - p);
+        g.beginPath();
+        g.moveTo(b.x + Math.cos(a) * d, b.y + Math.sin(a) * d);
+        g.lineTo(b.x + Math.cos(a) * (d + len), b.y + Math.sin(a) * (d + len));
+        g.stroke();
+      }
+    });
+    if (bursts.length) requestAnimationFrame(draw);
+  };
+  addEventListener('pointerdown', (e) => {
+    if (sparks.width !== innerWidth || sparks.height !== innerHeight) {
+      sparks.width = innerWidth;
+      sparks.height = innerHeight;
+    }
+    if (!bursts.length) requestAnimationFrame(draw);
+    bursts.push({ x: e.clientX, y: e.clientY, t: performance.now() });
+  });
 }
 
 // ── Loader → then scroll animations
