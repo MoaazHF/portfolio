@@ -104,7 +104,7 @@ const fragmentShader = /* glsl */ `
 export function initPortrait(canvas: HTMLCanvasElement, img: HTMLImageElement) {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5)); // canvas is 140% of the figure: 2x was ~4M pixels
 
   const css = getComputedStyle(document.documentElement);
   const u = {
@@ -173,11 +173,19 @@ export function initPortrait(canvas: HTMLCanvasElement, img: HTMLImageElement) {
       done(tex);
       resize();
     });
-  load(img.currentSrc || img.src, true, (tex) => {
+  // colour map straight from the <img> the page already downloaded and decoded (no second fetch)
+  const useImg = () => {
+    const tex = new THREE.Texture(img);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    tex.needsUpdate = true;
     u.uMap.value = tex;
     mesh.visible = true;
     img.classList.add('is-3d'); // <img> stays for layout, alt text, pointer events and no-WebGL fallback
-  });
+    resize();
+  };
+  if (img.complete && img.naturalWidth) useImg();
+  else img.addEventListener('load', useImg, { once: true });
   if (img.dataset.depth) load(img.dataset.depth, false, (tex) => (u.uDepthMap.value = tex));
 
   // pointer → tilt (whole page) and reveal position (raycast onto the mesh for its UV)
